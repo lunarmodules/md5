@@ -12,8 +12,8 @@ a hash (digest) function, an a pair crypt/decrypt.
 The Cryptographic Library for Lua is free software and uses the same
 <a href="license.html">license</a>
 as Lua.
-It can be downloaded in source code from the
-<a href="http://luaforge.net/projects/md5/files">Lua Forge</a>
+It can be downloaded in source code from its
+<a href="http://luaforge.net/projects/md5/files">LuaForge</a>
 page.
 </p>
 
@@ -90,7 +90,7 @@ which will be also the length of the resulting string.
 The following functions are declared in <code>md5.h</code>
 <ul>
 
-<li><code>int luaopen_md5 (lua_State *L);</code>
+<li><code>int luaopen_md5_core (lua_State *L);</code>
 <p>
 Opens the library:
 Registers the above Lua functions in the given state.
@@ -108,29 +108,46 @@ it must have at least 16 bytes (128 bits).
 
 <h2>Building & Installing</h2>
 
-The Cryptographic Library for Lua
-
+<p>
+The distribution provides a <code>Makefile</code> for Unix systems;
+edit the file <code>config</code> to suit the needs of the aimed platform.
+</p>
+<p>
+To build the library manually,
+follow the steps:
+</p>
 <ul>
+  <li>Build a shared library (<code>.so</code>, <code>.dll</code>, etc.)
+      with files <code>src/md5.c</code> and <code>src/md5lib.c</code>.
 
-<li>Build a shared library (<code>.so</code>, <code>.dll</code>, etc.)
-with files <code>md5.c</code> and <code>md5lib.c</code>.
-(There is a <code>makefile</code> for Linux and similar systems.)
+  <li>Create a directory called <code>md5</code> in your LUA_CPATH and
+      copy the shared library there, calling it <code>core.[so, dll ...]</code>.
 
-<li>Put the shared library somewhere,
-and edit file <code>md5.lua</code> to point to it.
-
-<li>Put the file <code>md5.lua</code> in a directory of your
-<code>LUA_PATH</code>.
+  <li>Put the file <code>md5.lua</code> in a directory of your
+      <code>LUA_PATH</code>.
 
 </ul>
+<p>
+The Cryptographic Library for Lua follows the
+<a href="http://www.keplerproject.org/compat">package model</a>
+for Lua 5.1, therefore it should be "installed".
+Refer to
+<a href="http://www.keplerproject.org/compat/manual.html#configuration">
+Compat-5.1 configuration</a>
+section about how to install the compiled binary properly.
+</p>
+
 
 <h2>Credits</h2>
 
+<p>
 The Cryptographic Library for Lua was designed and implemented by
 Roberto Ierusalimschy and Marcela Oz&oacute;rio Suarez.
+The current distribution was packed by Tom&aacute;s Guisasola.
+</p>
 
 <p><br><small><em>
-$Id: manual.html,v 1.2 2006/02/09 19:27:12 uid20013 Exp $
+$Id: manual.html,v 1.3 2006/03/03 15:04:49 tomas Exp $
 </em></small>
 
 </body></html>

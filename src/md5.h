@@ -1,5 +1,5 @@
 /**
-*  $Id: md5.h,v 1.1 2006/02/02 21:11:12 tomas Exp $
+*  $Id: md5.h,v 1.2 2006/03/03 15:04:49 tomas Exp $
 *  Cryptographic module for Lua.
 *  @author  Roberto Ierusalimschy
 */
@@ -14,7 +14,7 @@
 #define HASHSIZE       16
 
 void md5 (const char *message, long len, char *output);
-int luaopen_md5 (lua_State *L);
+int luaopen_md5_core (lua_State *L);
 
 
 #endif

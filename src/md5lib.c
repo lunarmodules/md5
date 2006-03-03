@@ -1,5 +1,5 @@
 /**
-*  $Id: md5lib.c,v 1.1 2006/02/02 21:11:12 tomas Exp $
+*  $Id: md5lib.c,v 1.2 2006/03/03 15:04:49 tomas Exp $
 *  Cryptographic and Hash functions for Lua
 *  @version  1.0
 *  @author  Roberto Ierusalimschy
@@ -14,29 +14,6 @@
 #include <lauxlib.h>
 
 #include "md5.h"
-
-
-/*
-*/
-static int sumhexa (lua_State *L) {
-  static char tab[] = { '0', '1', '2', '3', '4', '5', '6', '7',
-	  '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-  int i;
-  char buff[16];
-  char hexbuff[32];
-  size_t l;
-  const char *message = luaL_checklstring(L, 1, &l);
-  md5(message, l, buff);
-
-  for (i = 0; i < 16; i++)
-  {
-	hexbuff[i*2] = tab[(buff[i] >> 4) & 15];
-	hexbuff[i*2+1] = tab[buff[i] & 15];
-  }
-
-  lua_pushlstring(L, hexbuff, 32L);
-  return 1;
-}
 
 
 /**
@@ -195,23 +172,19 @@ static int decrypt (lua_State *L) {
 */
 static void set_info (lua_State *L) {
 	lua_pushliteral (L, "_COPYRIGHT");
-	lua_pushliteral (L, "Copyright (C) 2003-2004 Roberto Ierusalimschy");
+	lua_pushliteral (L, "Copyright (C) 2003-2006 PUC-Rio");
 	lua_settable (L, -3);
 	lua_pushliteral (L, "_DESCRIPTION");
 	lua_pushliteral (L, "Basic cryptographic facilities");
 	lua_settable (L, -3);
-	lua_pushliteral (L, "_NAME");
-	lua_pushliteral (L, "MD5");
-	lua_settable (L, -3);
 	lua_pushliteral (L, "_VERSION");
-	lua_pushliteral (L, "1.0");
+	lua_pushliteral (L, "MD5 1.0");
 	lua_settable (L, -3);
 }
 
 
 static struct luaL_reg md5lib[] = {
   {"sum", lmd5},
-  {"sumhexa", sumhexa},
   {"exor", ex_or},
   {"crypt", crypt},
   {"decrypt", decrypt},
@@ -219,7 +192,7 @@ static struct luaL_reg md5lib[] = {
 };
 
 
-int luaopen_md5 (lua_State *L) {
+int luaopen_md5_core (lua_State *L) {
   luaL_openlib(L, "md5", md5lib, 0);
   set_info (L);
   return 1;

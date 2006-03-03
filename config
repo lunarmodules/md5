@@ -1,6 +1,9 @@
 # Installation directories
 # System's libraries directory (where binary libraries are installed)
 LUA_LIBDIR= /usr/local/lib/lua/5.0
+# Lua directory (where Lua source libraries will be installed)
+# This is the LUA_PATH
+LUA_DIR= /usr/local/share/lua/5.0
 # Lua includes directory
 LUA_INC= /usr/local/include
 
@@ -17,4 +20,4 @@ INCS= -I$(LUA_INC) -I$(COMPAT_DIR)
 CFLAGS= $(WARN) $(INCS)
 CC= gcc
 
-# $Id: config,v 1.1 2006/02/02 21:11:12 tomas Exp $
+# $Id: config,v 1.2 2006/03/03 15:04:49 tomas Exp $

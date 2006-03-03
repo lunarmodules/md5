@@ -1,22 +1,19 @@
--- md5.lua
--- (you should put this file in any directory of your LUA_PATH)
+----------------------------------------------------------------------------
+-- $Id: md5.lua,v 1.2 2006/03/03 15:04:49 tomas Exp $
+----------------------------------------------------------------------------
 
+local core = require"md5.core"
+local string = require"string"
 
--- change the next line to point to the md5 dynamic library
+module ("md5")
 
--- local path = "/usr/local/lua/lib/libmd5.so"
-local path = "./libmd5.so"
+----------------------------------------------------------------------------
+-- @param k String with original message.
+-- @return String with the md5 hash value converted to hexadecimal digits
 
-assert(loadlib(path, "luaopen_md5"))()
-
-
--- Returns the md5 hash value as a string of hexadecimal digits
-
-function md5.sumhexa (k)
-  k = md5.sum(k)
+function sumhexa (k)
+  k = core.sum(k)
   return (string.gsub(k, ".", function (c)
            return string.format("%02x", string.byte(c))
          end))
 end
-
-return md5
