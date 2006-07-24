@@ -1,5 +1,5 @@
 /**
-*  $Id: md5lib.c,v 1.2 2006/03/03 15:04:49 tomas Exp $
+*  $Id: md5lib.c,v 1.3 2006/07/24 00:47:09 tomas Exp $
 *  Cryptographic and Hash functions for Lua
 *  @version  1.0
 *  @author  Roberto Ierusalimschy
@@ -12,6 +12,10 @@
 
 #include <lua.h>
 #include <lauxlib.h>
+
+#if ! defined (LUA_VERSION_NUM) || LUA_VERSION_NUM < 501
+#include "compat-5.1.h"
+#endif
 
 #include "md5.h"
 
@@ -178,7 +182,7 @@ static void set_info (lua_State *L) {
 	lua_pushliteral (L, "Basic cryptographic facilities");
 	lua_settable (L, -3);
 	lua_pushliteral (L, "_VERSION");
-	lua_pushliteral (L, "MD5 1.0");
+	lua_pushliteral (L, "MD5 1.0.1");
 	lua_settable (L, -3);
 }
 
