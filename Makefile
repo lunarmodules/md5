@@ -1,12 +1,15 @@
-# $Id: Makefile,v 1.2 2006/03/03 15:04:49 tomas Exp $
+# $Id: Makefile,v 1.3 2006/07/24 01:16:37 tomas Exp $
 
 T= md5
-V= 1.0
+V= 1.0.1
 CONFIG= ./config
 
 include $(CONFIG)
 
+ifeq "$(LUA_VERSION_NUM)" "500"
 COMPAT_O= $(COMPAT_DIR)/compat-5.1.o
+endif
+
 OBJS= src/md5.o src/md5lib.o $(COMPAT_O)
 LUAS= src/md5.lua
 
