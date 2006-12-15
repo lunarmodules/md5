@@ -1,0 +1,24 @@
+# Installation directories
+# System's libraries directory (where binary libraries are installed)
+LUA_LIBDIR= c:\lua51\lib
+# Lua directory (where Lua source libraries will be installed)
+# This is the LUA_PATH
+LUA_DIR= c:\lua51\lua
+# Lua includes directory
+LUA_INC= c:\lua51\include
+LUA_LIB= c:\lua51\bin\lua5.1.lib
+
+LIBNAME= $T.dll
+# Lua version number
+# (according to Lua 5.1 definition:
+# first version digit * 100 + second version digit
+# e.g. Lua 5.0.2 => 500, Lua 5.1 => 501, Lua 5.1.1 => 501)
+LUA_VERSION_NUM= 501
+
+# Compilation directives
+WARN= /O2 
+INCS= /I$(LUA_INC)
+CFLAGS= $(WARN) $(INCS)
+CC= cl
+
+# $Id: config.win,v 1.1 2006/12/15 18:15:00 mascarenhas Exp $

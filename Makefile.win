@@ -1,0 +1,26 @@
+# $Id: Makefile.win,v 1.1 2006/12/15 18:15:00 mascarenhas Exp $
+
+T= md5
+V= 1.0.1
+
+include config.win
+
+OBJS= src\md5.obj src\md5lib.obj 
+LUAS= src\md5.lua
+
+
+.c.obj:
+	$(CC) /c /Fo$@ $(CFLAGS) $<
+
+src\$(LIBNAME) : $(OBJS)
+	link /dll /def:src\$(T).def /out:src\$(LIBNAME) $(OBJS) $(LUA_LIB)
+
+install: src\$(LIBNAME)
+	IF NOT EXIST $(LUA_LIBDIR)/md5 mkdir $(LUA_LIBDIR)\md5
+	copy src\$(LIBNAME) $(LUA_LIBDIR)\md5\core.so
+	IF NOT EXIST $(LUA_DIR) mkdir $(LUA_DIR)
+	copy $(LUAS) $(LUA_DIR)
+
+clean:
+	FOR %i in ($(OBJS)) DO del %i
+	del src\$(LIBNAME)
