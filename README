@@ -1,8 +1,9 @@
 MD5 - Cryptographic Library for Lua
 Copyright 2003-2006 PUC-Rio
+http://www.keplerproject.org/md5
 
 MD5 offers basic cryptographic facilities for Lua 5.0 and 5.1: a hash (digest)
-function, an a pair crypt/decrypt.
+function, an a pair crypt/decrypt. MD5 current version is 1.0.2
 
 To install on Linux/OSX/BSD, please edit the config file and then call
 
@@ -11,4 +12,4 @@ make install
 
 The last step may require root privileges.
 
-Please check the documentation at doc/us/ for more information.
+Please check the documentation at /doc/us/ for more information.
