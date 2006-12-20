@@ -1,7 +1,7 @@
-# $Id: Makefile,v 1.3 2006/07/24 01:16:37 tomas Exp $
+# $Id: Makefile,v 1.4 2006/12/20 20:17:20 carregal Exp $
 
 T= md5
-V= 1.0.1
+V= 1.0.2
 CONFIG= ./config
 
 include $(CONFIG)
