@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.5 2007/05/08 21:08:37 carregal Exp $
+# $Id: Makefile.win,v 1.6 2007/05/08 21:10:42 carregal Exp $
 
 T= md5
 V= 1.0.2
@@ -23,4 +23,4 @@ install: src\$(LIBNAME)
 
 clean:
 	FOR %i in ($(OBJS)) DO del %i
-	del src\$(LIBNAME) src\$T.lib src\$T.exp
+	del src\$(LIBNAME) src\core.lib src\core.exp
