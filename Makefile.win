@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.4 2007/05/08 20:36:04 carregal Exp $
+# $Id: Makefile.win,v 1.5 2007/05/08 21:08:37 carregal Exp $
 
 T= md5
 V= 1.0.2
@@ -16,8 +16,9 @@ src\$(LIBNAME) : $(OBJS)
 	link /dll /def:src\$(T).def /out:src\$(LIBNAME) $(OBJS) $(LUA_LIB)
 
 install: src\$(LIBNAME)
+	IF NOT EXIST $(LUA_LIBDIR)/md5 mkdir $(LUA_LIBDIR)\md5
+	copy src\$(LIBNAME) $(LUA_LIBDIR)\md5\core.so
 	IF NOT EXIST $(LUA_DIR) mkdir $(LUA_DIR)
-	copy src\$(LIBNAME) $(LUA_LIBDIR)	
 	copy $(LUAS) $(LUA_DIR)
 
 clean:

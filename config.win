@@ -8,7 +8,7 @@ LUA_DIR= c:\lua5.1\lua
 LUA_INC= c:\lua5.1\include
 LUA_LIB= c:\lua5.1\bin\lua5.1.lib
 
-LIBNAME= $T.dll
+LIBNAME= core.dll
 # Lua version number
 # (according to Lua 5.1 definition:
 # first version digit * 100 + second version digit
@@ -21,4 +21,4 @@ INCS= /I$(LUA_INC)
 CFLAGS= $(WARN) $(INCS)
 CC= cl
 
-# $Id: config.win,v 1.2 2007/03/15 21:27:50 carregal Exp $
+# $Id: config.win,v 1.3 2007/05/08 21:08:37 carregal Exp $
