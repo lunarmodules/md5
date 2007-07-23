@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.9 2007/07/23 20:24:23 mascarenhas Exp $
+# $Id: Makefile.win,v 1.10 2007/07/23 20:58:34 carregal Exp $
 
 include config.win
 
@@ -30,4 +30,4 @@ install: src\$(MD5_LIBNAME) src\$(DES56_LIBNAME)
 clean:
 	FOR %i in ($(MD5_OBJS)) DO del %i
 	FOR %i in ($(DES56_OBJS)) DO del %i
-	del src\$(MD5_LIBNAME) src\$(DES56_LIBNAME) src\core.lib src\core.exp
+	del src\$(MD5_LIBNAME) src\$(DES56_LIBNAME) src\core.lib src\core.exp src\des56.lib src\des56.exp
