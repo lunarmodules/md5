@@ -11,7 +11,6 @@ LUA_INC= /usr/local/include/lua51
 LIB_OPTION= -shared #for Linux
 #LIB_OPTION= -bundle -undefined dynamic_lookup #for MacOS X
 
-LIBNAME= $T.so.$V
 # Lua version number
 # (according to Lua 5.1 definition:
 # first version digit * 100 + second version digit
@@ -25,4 +24,4 @@ INCS= -I$(LUA_INC) -I$(COMPAT_DIR)
 CFLAGS= $(WARN) $(INCS)
 CC= gcc
 
-# $Id: config,v 1.4 2006/12/15 18:15:00 mascarenhas Exp $
+# $Id: config,v 1.5 2007/07/23 20:24:23 mascarenhas Exp $

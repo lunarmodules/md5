@@ -63,7 +63,7 @@
 
 <p>
 MD5 offers basic cryptographic facilities for Lua 5.1:
-a hash (digest) function, and a pair crypt/decrypt.
+a hash (digest) function, a pair crypt/decrypt based on MD5 and CFB, and a pair crypt/decrypt based on DES with 56-bt keys.
 </p>
 
 <p>
@@ -85,10 +85,11 @@ which is not obtained from the installed software.
 <h2><a name="installation"></a>Installation</h2>
 
 <p>
-The compiled binary file should be copied to a directory called <code>md5</code>
+There are two compiled binary files, core.so and des56.so. The first 
+ should be copied to a directory called <code>md5</code>
 in your 
-<a href="http://www.lua.org/manual/5.1/manual.html#pdf-package.cpath">C path</a>
-with the name <code>core.[so|dll]</code>. Windows users can use the binary version
+<a href="http://www.lua.org/manual/5.1/manual.html#pdf-package.cpath">C path</a>. Just copy the second to a directory in your Lua C path.
+Windows users can use the binary version
 of MD5 available at
 <a href="http://luaforge.net/projects/md5/files">LuaForge</a>.</p>
 
@@ -101,7 +102,8 @@ The file <code>md5.lua</code> should be copied to a directory in your
 
 <h3><a name="lua_api"></a>Lua API</h3>
 
-<p>All MD5 functions are registered inside a table <code>md5</code>.</p>
+<p>All MD5-based functions are registered inside a table <code>md5</code>. The DES-based
+functions are registered inside a table <code>des56</code>.</p>
 
 <dl>
     <dt><strong>md5.sum (message)</strong></dt>
@@ -150,6 +152,21 @@ The file <code>md5.lua</code> should be copied to a directory in your
         Both strings must have the same length, which will be also the length of
         the resulting string.
     </dd>
+
+    <dt><strong>des56.crypt (message, key)</strong></dt>
+    <dd>Encrypts a string, using DES with a 56-bit key.
+        <code>message</code> is an arbitrary binary string to be encrypted.
+        <code>key</code> is an 8-byte binary string to be used as a key.
+        Returns the cyphertext (as a binary string).<br />
+    </dd>
+
+    <dt><strong>des56.decrypt (message, key)</strong></dt>
+    <dd>Decrypts a string. The input <code>message</code> must be the result of
+        a previous call to <code>des56.crypt</code>. For any <code>msg</code>
+        and <code>key</code>, we have that
+        <pre>des56.decrypt(des56.crypt(msg, key), key) == msg</pre>
+    </dd>
+
 </dl>
 
 <h3><a name="c_api"></a>C API</h3>
@@ -158,7 +175,7 @@ The file <code>md5.lua</code> should be copied to a directory in your
 
 <dl>
     <dt><strong>int luaopen_md5_core (lua_State *L)</strong></dt>
-    <dd>Opens the library and registers the above Lua functions in the given state.</dd>
+    <dd>Opens the library and registers the "md5" Lua functions in the given state.</dd>
     
     <dt><strong>void md5 (const char *message, long len, char *output)</strong></dt>
     <dd>Computes the MD5 message-digest of <code>message</code>.
@@ -168,6 +185,15 @@ The file <code>md5.lua</code> should be copied to a directory in your
     </dd>
 </dl>
 
+<p>The following function is declared in <code>des56.h</code></p>
+    
+<dl>
+    <dt><strong>int luaopen_des56 (lua_State *L)</strong></dt>
+    <dd>Opens the library and registers the "des56" Lua functions in the given state.</dd>
+        
+</dl>
+
+
 
 </div> <!-- id="content" -->
 
@@ -176,7 +202,7 @@ The file <code>md5.lua</code> should be copied to a directory in your
 <div id="about">
 	<p><a href="http://validator.w3.org/check?uri=referer">
     <img src="http://www.w3.org/Icons/valid-xhtml10" alt="Valid XHTML 1.0!" height="31" width="88" /></a></p>
-	<p><small>$Id: manual.html,v 1.9 2007/05/08 21:18:14 carregal Exp $</small></p>
+	<p><small>$Id: manual.html,v 1.10 2007/07/23 20:24:23 mascarenhas Exp $</small></p>
 </div> <!-- id="about" -->
 
 </div> <!-- id="container" -->
