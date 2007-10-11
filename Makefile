@@ -1,4 +1,4 @@
-# $Id: Makefile,v 1.6 2007/07/23 20:24:23 mascarenhas Exp $
+# $Id: Makefile,v 1.7 2007/10/11 00:02:56 carregal Exp $
 
 CONFIG= ./config
 
@@ -34,4 +34,4 @@ install: src/$(MD5_LIBNAME) src/$(DES56_LIBNAME)
 	cp src/$(DES56_LIBNAME) $(LUA_LIBDIR)
 
 clean:
-	rm -f $(MD5_OBJS) src/$(MD5_LIBNAME) $(DES56_OBJS) $(DES56_LIBNAME)
+	rm -f $(MD5_OBJS) src/$(MD5_LIBNAME) $(DES56_OBJS) src/$(DES56_LIBNAME)
