@@ -1,11 +1,16 @@
 # Installation directories
+
+# Default prefix
+PREFIX = /usr/local
+
 # System's libraries directory (where binary libraries are installed)
-LUA_LIBDIR= /usr/local/lib/lua/5.1
-# Lua directory (where Lua source libraries will be installed)
-# This is the LUA_PATH
-LUA_DIR= /usr/local/share/lua/5.1
+LUA_LIBDIR= $(PREFIX)/lib/lua/5.1
+
+# System's lua directory (where Lua libraries are installed)
+LUA_DIR= $(PREFIX)/share/lua/5.1
+
 # Lua includes directory
-LUA_INC= /usr/local/include/lua51
+LUA_INC= $(PREFIX)/include
 
 # OS dependent
 LIB_OPTION= -shared #for Linux
@@ -24,4 +29,4 @@ INCS= -I$(LUA_INC) -I$(COMPAT_DIR)
 CFLAGS= $(WARN) $(INCS)
 CC= gcc
 
-# $Id: config,v 1.5 2007/07/23 20:24:23 mascarenhas Exp $
+# $Id: config,v 1.6 2007/10/29 23:00:23 carregal Exp $
