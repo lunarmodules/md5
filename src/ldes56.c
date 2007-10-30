@@ -120,6 +120,21 @@ static int des56_crypt( lua_State *L )
   return 1;
 }
 
+/*
+** Assumes the table is on top of the stack.
+*/
+static void set_info (lua_State *L) {
+	lua_pushliteral (L, "_COPYRIGHT");
+	lua_pushliteral (L, "Copyright (C) 2003-2007 PUC-Rio");
+	lua_settable (L, -3);
+	lua_pushliteral (L, "_DESCRIPTION");
+	lua_pushliteral (L, "DES 56 cryptographic facilities");
+	lua_settable (L, -3);
+	lua_pushliteral (L, "_VERSION");
+	lua_pushliteral (L, "DES56 1.1.0");
+	lua_settable (L, -3);
+}
+
 static const struct luaL_reg des56lib[] = {
   {"crypt", des56_crypt},
   {"decrypt", des56_decrypt},
@@ -128,6 +143,7 @@ static const struct luaL_reg des56lib[] = {
 
 int luaopen_des56 (lua_State *L) {
   luaL_openlib (L, "des56", des56lib, 0);
+  set_info (L);
   return 1;
 }
 
