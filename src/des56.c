@@ -72,7 +72,7 @@ typedef union {
 # define	b16	b.B16
 # define	b24	b.B24
 
-#endif SLOWSHIFT
+#endif 
 
 /*
  * Key schedule generation.
@@ -281,13 +281,13 @@ static void buildtables( void )
 #else
 # if BSD
 #  define	ZERO(array)	bzero((char *)(array), sizeof(array))
-# else !USG && !BSD
+# else 
 #  define	ZERO(array)	{ register word32 *p = (word32 *)(array); \
 				  i = sizeof(array) / sizeof(*p); \
 				  do { *p++ = 0; } while(--i > 0); \
 				}
-# endif !USG && !BSD
-#endif !USG
+# endif 
+#endif 
 
 #ifdef SLOWSHIFT
 	/* Sanity check -- make sure ENDIAN was set correctly */
@@ -300,7 +300,7 @@ static void buildtables( void )
 		abort();
 	    }
 	}
-#endif SLOWSHIFT
+#endif 
 
 	/* Invert permuted-choice-1 (key => C,D) */
 
@@ -503,7 +503,7 @@ void fsetkey(key, ks)
 		    ap[16*5 + ((v>>4)&15)]  | ap[16*4 + ((v>>8)&15)]  | \
 		    ap[16*3 + ((v>>12)&15)] | ap[16*2 + ((v>>16)&15)] | \
 		    ap[16*1 + ((v>>20)&15)] | ap[16*0 + ((v>>24)&15)] )
-#endif !CRAY
+#endif 
 
 
 		/* 28-bit left circular shift */
@@ -516,7 +516,7 @@ void fsetkey(key, ks)
 		ks->KS[i].l = choice2(lKS_D4, D);
 	}
 }
-#endif !SLOWSHIFT
+#endif 
 
 void
 fencrypt(block, decrypt, ks)
@@ -550,10 +550,10 @@ fencrypt(block, decrypt, ks)
 
 #ifdef CRAY
 #  define PS(i,j)	wPS[i][j]
-#else !CRAY
+#else 
 #  define PS(i,j)	ap[64*(i) + (j)]
 	ap = &wPS[0][0];
-#endif !CRAY
+#endif 
 
 	i = 16;
 	do {
@@ -654,11 +654,11 @@ fencrypt(block, decrypt, ks)
 
 #ifdef CRAY
 # define FP(k)	(wO_L4[ (L >> (k)) & 15 ] << 1 | wO_L4[ (R >> (k)) & 15 ])
-#else !CRAY
+#else 
 # define FP(k)	(ap[ (L >> (k)) & 15 ] << 1 | ap[ (R >> (k)) & 15 ])
 
 		ap = wO_L4;
-#endif !CRAY
+#endif 
 
 		t = FP(0) | (FP(8) | (FP(16) | (FP(24) << 2)) << 2) << 2;
 		R = FP(4) | (FP(12) | (FP(20) | (FP(28) << 2)) << 2) << 2;
@@ -680,6 +680,6 @@ fencrypt(block, decrypt, ks)
 		*--bp = (t >>= 8) & 255;
 		*--bp = (t >> 8) & 255;
 	}
-#endif !SLOWSHIFT
+#endif 
 }
 
