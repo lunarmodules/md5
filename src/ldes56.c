@@ -33,12 +33,12 @@ static int des56_decrypt( lua_State *L )
   /* Inicia decifragem */
   if (key && strlen(key) >= 8)
   {
-    chunk k;
+    char k[8];
     int i;
 
     for (i=0; i<8; i++)
-      k.b[i] = (unsigned char)key[i];
-    fsetkey(&k, KS);
+      k[i] = (unsigned char)key[i];
+    fsetkey(k, &KS);
   } else {
     lua_pushstring(L, "Error decrypting file. Invalid key.");
     lua_error(L);
@@ -54,7 +54,7 @@ static int des56_decrypt( lua_State *L )
     if( rel_index == 8 )
     {
       rel_index = 0;
-      fencrypt(&(decypheredText[abs_index - 8]), 1, KS);
+      fencrypt(&(decypheredText[abs_index - 8]), 1, &KS);
     }
   }
   decypheredText[abs_index] = 0;
@@ -81,12 +81,12 @@ static int des56_crypt( lua_State *L )
 
   if (key && strlen(key) >= 8)
   {
-    chunk k;
+    char k[8];
     int i;
 
     for (i=0; i<8; i++)
-      k.b[i] = (unsigned char)key[i];
-    fsetkey(&k, KS);
+      k[i] = (unsigned char)key[i];
+    fsetkey(k, &KS);
   } else {
     lua_pushstring(L, "Error encrypting file. Invalid key.");
     lua_error(L);
@@ -99,7 +99,7 @@ static int des56_crypt( lua_State *L )
     rel_index++;
     if( rel_index == 8 ) {
       rel_index = 0;
-      fencrypt(&(cypheredText[abs_index - 8]), 0, KS);
+      fencrypt(&(cypheredText[abs_index - 8]), 0, &KS);
     }
   }
 
@@ -111,7 +111,7 @@ static int des56_crypt( lua_State *L )
       cypheredText[abs_index++] = 0;
       rel_index++;
     }
-    fencrypt(&(cypheredText[abs_index - 8]), 0, KS);
+    fencrypt(&(cypheredText[abs_index - 8]), 0, &KS);
   }
   cypheredText[abs_index] = pad;
 
