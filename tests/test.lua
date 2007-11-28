@@ -1,5 +1,7 @@
 #!/usr/local/bin/lua50
 
+-- Testing MD5
+
 require"md5"
 
 
@@ -75,4 +77,33 @@ contchars(code)
 
 assert(md5.crypt('a', 'a') ~= md5.crypt('a', 'b'))
 
-print"OK"
+print"MD5 OK"
+
+
+-- Testing DES 56
+require 'des56'
+
+local key = '&3g4&gs*&3'
+
+assert(des56.decrypt(des56.crypt('', key), key) == '')
+assert(des56.decrypt(des56.crypt('', key), key) == '')
+assert(des56.decrypt(des56.crypt('a', key), key) == 'a')
+assert(des56.decrypt(des56.crypt('1234567890', key), key) == '1234567890')
+
+local msg = string.rep("1233456789\0\1\2\3\0\255", 10000)
+local code = des56.crypt(msg, key)
+
+assert(des56.decrypt(code, key) == msg)
+assert(des56.crypt('a', '12345678') ~= des56.crypt('a', '87654321'))
+
+local ascii = ""
+
+for i = 0, 255 do
+	ascii = ascii..string.char(i)
+end
+
+assert(des56.decrypt(des56.crypt(ascii, key), key) == ascii)
+key = string.sub(ascii, 2)
+assert(des56.decrypt(des56.crypt(ascii, key), key) == ascii)
+
+print"DES56 OK"
