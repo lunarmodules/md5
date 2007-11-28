@@ -47,9 +47,10 @@ static int des56_decrypt( lua_State *L )
   rel_index = 0;
   abs_index = 0;
 
-  while (abs_index < cypherlen)
+  while (abs_index < (int) cypherlen)
   {
-    decypheredText[abs_index] = cypheredText[abs_index++];
+    decypheredText[abs_index] = cypheredText[abs_index];
+    abs_index++;
     rel_index++;
     if( rel_index == 8 )
     {
@@ -68,7 +69,7 @@ static int des56_crypt( lua_State *L )
 {
   char *cypheredText;
   keysched KS;
-  int rel_index, abs_index, pad;
+  int rel_index, pad, abs_index;
   size_t plainlen;
   const char *plainText = luaL_checklstring( L, 1, &plainlen );
   const char *key = luaL_optstring( L, 2, NULL );
@@ -94,8 +95,9 @@ static int des56_crypt( lua_State *L )
 
   rel_index = 0;
   abs_index = 0;
-  while (abs_index < plainlen) {
-    cypheredText[abs_index] = plainText[abs_index++];
+  while (abs_index < (int) plainlen) {
+    cypheredText[abs_index] = plainText[abs_index];
+    abs_index++;
     rel_index++;
     if( rel_index == 8 ) {
       rel_index = 0;
