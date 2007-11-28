@@ -3,10 +3,6 @@
 
 typedef long keysched[32];
 
-typedef struct {
-	unsigned char b[8];
-} chunk;
-
 #define DT_OK 0
 #define DT_FILE_NOT_FOUND 1
 #define DT_NOT_ENOUGH_MEMORY 2

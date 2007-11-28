@@ -4,19 +4,8 @@
  * Vol. 40, No. 52, p. 12134, March 17, 1975.
  *
  * Stuart Levy, Minnesota Supercomputer Center, April 1988.
- *
- * Compilation:
- * There's one performance-determining compilation switch, -DSLOWSHIFT.
- * If defined, the code avoids 32-bit shift operations, preferring instead
- * to extract 8- and 16-bit quantities from memory.  This may help for 16-bit
- * processors or those which do not do shifts efficiently.  It hurts for
- * 32-bit CPUs with barrel shifters, e.g. the 68020.  Try it and see.
- *
- * If you -DSLOWSHIFT you must also define -DENDIAN=xxx where "xxx" is either
- *    BIG    for machines where the MSByte is the low address: 68000, ...
- * or LITTLE for machines where the LSByte is the low addr: VAX, 8086, ...
- *
- * If you get it wrong fsetkey() will print a message and dump core at run time.
+ * Currently (2007) slevy@ncsa.uiuc.edu
+ * NCSA, University of Illinois Urbana-Champaign
  *
  * Calling sequence:
  *
@@ -39,6 +28,36 @@
  *  key[0] = 128*bit1 + 64*bit2 + ... + 1*bit8, ... through
  *  key[7] = 128*bit57 + 64*bit58 + ... + 1*bit64.
  * In the key, "parity" bits are not checked; their values are ignored.
+ *
+*/
+
+/*
+===============================================================================
+License
+
+des56.c is licensed under the terms of the MIT license reproduced below.
+This means that des56.c is free software and can be used for both academic
+and commercial purposes at absolutely no cost.
+===============================================================================
+Copyright (C) 1988 Stuart Levy
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
  */
 
 typedef unsigned long word32;
@@ -50,29 +69,6 @@ typedef struct keysched {
 	} KS[16];
 } keysched;
 
-#ifdef SLOWSHIFT
-# define BIG	1234
-# define LITTLE 4321
-
-typedef union {
-	unsigned long w;
-# if ENDIAN == BIG
-	struct { unsigned short S0, S16; } s;
-	struct { unsigned char B0, B8, B16, B24; } b;
-# else ENDIAN == LITTLE
-	struct { unsigned short S16, S0; } s;
-	struct { unsigned char B24, B16, B8, B0; } b;
-# endif ENDIAN == LITTLE
-} Word32;
-
-# define	s0	s.S0
-# define	s16	s.S16
-# define	b0	b.B0
-# define	b8	b.B8
-# define	b16	b.B16
-# define	b24	b.B24
-
-#endif 
 
 /*
  * Key schedule generation.
@@ -289,18 +285,6 @@ static void buildtables( void )
 # endif 
 #endif 
 
-#ifdef SLOWSHIFT
-	/* Sanity check -- make sure ENDIAN was set correctly */
-	{
-	    Word32 v;
-	    v.w = (word32) 0x00010203;
-	    if(v.b16 != 2 || v.b24 != 3 || v.s0 != 1) {
-		write(2, "fastdes: compiled with wrong value for -DENDIAN!\n",
-		      49);
-		abort();
-	    }
-	}
-#endif 
 
 	/* Invert permuted-choice-1 (key => C,D) */
 
@@ -404,64 +388,6 @@ static void buildtables( void )
 	}
 }
 
-#ifdef SLOWSHIFT
-fsetkey(key, ks)
-	char key[8];
-	keysched *ks;
-{
-	register int i;
-	Word32 C, D;
-	static int built = 0;
-
-	if(!built) {
-		buildtables();
-		built = 1;
-	}
-
-	C.w = D.w = 0;
-	for(i = 0; i < 8; i++) {
-		register int v;
-
-		v = key[i] >> 1;	/* Discard "parity" bit */
-		C.w |= wC_K4[i][(v>>3) & 15] | wC_K3[i][v & 7];
-		D.w |= wD_K4[i][(v>>3) & 15] | wD_K3[i][v & 7];
-	}
-
-	/*
-	 * C and D now hold the suitably right-justified
-	 * 28 permuted key bits each.
-	 */
-	for(i = 0; i < 16; i++) {
-		register word32 *ap;
-
-#define choice2(x, v)  ( \
-		    ap = &(x)[0][0], \
-		    ap[16*6 + (v.b24&15)] | ap[16*5 + ((v.b24>>4)&15)] | \
-		    ap[16*4 + (v.b16&15)] | ap[16*3 + ((v.b16>>4)&15)] | \
-		    ap[16*2 + (v.b8&15)]  | ap[16*1 + ((v.b8>>4)&15)] | \
-		    ap[16*0 + (v.b0&15)] )
-
-
-		/* 28-bit left circular shift */
-		/* Avoid <<, use += instead */
-		C.w += C.w;
-		D.w += D.w;
-		if(preshift[i] == 2) {
-			C.w += C.w;
-			D.w += D.w;
-		}
-		/* Wrap around at 28 bits */
-		C.b24 += C.b0 >> 4;
-		C.b0 &= (1 << 4) - 1;
-		D.b24 += D.b0 >> 4;
-		D.b0 &= (1 << 4) - 1;
-
-		ks->KS[i].h = choice2(hKS_C4, C);
-		ks->KS[i].l = choice2(lKS_D4, D);
-	}
-}
-
-#else !SLOWSHIFT
 
 void fsetkey(key, ks)
 	char key[8];
@@ -494,7 +420,7 @@ void fsetkey(key, ks)
 #define choice2(x, v)  x[6][v&15] | x[5][(v>>4)&15] | x[4][(v>>8)&15] | \
 		    x[3][(v>>12)&15] | x[2][(v>>16)&15] | x[1][(v>>20)&15] | \
 		    x[0][(v>>24)&15]
-#else !CRAY
+#else
 		register word32 *ap;
 
 #  define choice2(x, v)  ( \
@@ -516,7 +442,6 @@ void fsetkey(key, ks)
 		ks->KS[i].l = choice2(lKS_D4, D);
 	}
 }
-#endif 
 
 void
 fencrypt(block, decrypt, ks)
@@ -557,72 +482,6 @@ fencrypt(block, decrypt, ks)
 
 	i = 16;
 	do {
-#ifdef SLOWSHIFT
-		Word32 k, tR;
-
-		k.w = R;
-		tR.s0 = (k.s16 << 1);
-		if(k.s0 & (1 << 15)) tR.s0 |= 1;
-		tR.s16 = (k.s0 << 1);
-		if(k.s16 & (1 << 15)) tR.s16 |= 1;
-
-		k.w = ksp->h;
-		L ^= PS(0, (((tR.b16 >> 4) | (tR.b8 << 4)) ^ k.b0) & 63)
-		   | PS(1, (tR.b16 ^ k.b8) & 63)
-		   | PS(2, ((tR.s16 >> 4) ^ k.b16) & 63)
-		   | PS(3, (tR.b24 ^ k.b24) & 63);
-
-		k.w = ksp->l;
-		L ^= PS(4, (((tR.b0 >> 4) | (tR.b24 << 4)) ^ k.b0) & 63)
-		   | PS(5, (tR.b0 ^ k.b8) & 63)
-		   | PS(6, ((tR.s0 >> 4) ^ k.b16) & 63)
-		   | PS(7, (tR.b8 ^ k.b24) & 63);
-
-		tR.w = L;
-		L = R;
-		R = tR.w;
-
-
-		if(decrypt)
-			ksp--;
-		else
-			ksp++;
-	} while(--i > 0);
-	{
-		Word32 tL, tR;
-
-		tL.w = L;
-		tR.w = R;
-		L = R = 0;
-		ap = wO_L4;
-
-#define FP(bn)		L += L + ap[ tL.bn & 15 ]; \
-			L += L + ap[ tR.bn & 15 ]; \
-			R += R + ap[ (tL.bn >> 4) & 15 ]; \
-			R += R + ap[ (tR.bn >> 4) & 15 ];
-
-		FP(b0);
-		FP(b8);
-		FP(b16);
-		FP(b24);
-	}
-	{
-		Word32 t;
-		register char *bp;
-
-		t.w = R;
-		bp = &block[7];
-		*bp = t.b24;
-		*--bp = t.b16;
-		*--bp = t.b8;
-		*--bp = t.b0;
-		t.w = L;
-		*--bp = t.b24;
-		*--bp = t.b16;
-		*--bp = t.b8;
-		*--bp = t.b0;
-	}
-#else !SLOWSHIFT
 		register word32 k, tR;
 
 		tR = (R >> 15) | (R << 17);
@@ -680,6 +539,5 @@ fencrypt(block, decrypt, ks)
 		*--bp = (t >>= 8) & 255;
 		*--bp = (t >> 8) & 255;
 	}
-#endif 
 }
 
