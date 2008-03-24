@@ -1,5 +1,5 @@
 /**
-*  $Id: md5.c,v 1.1 2006/02/02 21:11:12 tomas Exp $
+*  $Id: md5.c,v 1.2 2008/03/24 20:59:12 mascarenhas Exp $
 *  Hash function MD5
 *  @author  Marcela Ozorio Suarez, Roberto I.
 */
@@ -12,7 +12,12 @@
 
 #define WORD 32
 #define MASK 0xFFFFFFFF
-typedef unsigned long WORD32;
+#if __STDC_VERSION__ >= 199901L
+#include <stdint.h>
+typedef uint32_t WORD32;
+#else
+typedef unsigned int WORD32;
+#endif
 
 
 /**

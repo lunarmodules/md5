@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.10 2007/07/23 20:58:34 carregal Exp $
+# $Id: Makefile.win,v 1.11 2008/03/24 20:59:11 mascarenhas Exp $
 
 include config.win
 
@@ -12,13 +12,15 @@ DES56_LIBNAME= des56.dll
 all: src\$(MD5_LIBNAME) src\$(DES56_LIBNAME)
 
 .c.obj:
-	$(CC) /c /Fo$@ $(CFLAGS) $<
+	$(CC) /MD /c /Fo$@ $(CFLAGS) $<
 
 src\$(MD5_LIBNAME) : $(MD5_OBJS)
 	link /dll /def:src\md5.def /out:src\$(MD5_LIBNAME) $(MD5_OBJS) $(LUA_LIB)
+	IF EXIST src\core.dll.manifest mt -manifest src\core.dll.manifest -outputresource:src\core.dll;2
 
 src\$(DES56_LIBNAME) : $(DES56_OBJS)
 	link /dll /def:src\des56.def /out:src\$(DES56_LIBNAME) $(DES56_OBJS) $(LUA_LIB)
+	IF EXIST src\des56.dll.manifest mt -manifest src\des56.dll.manifest -outputresource:src\des56.dll;2
 
 install: src\$(MD5_LIBNAME) src\$(DES56_LIBNAME)
 	IF NOT EXIST $(LUA_LIBDIR)\md5 mkdir $(LUA_LIBDIR)\md5
