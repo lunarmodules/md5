@@ -1,4 +1,4 @@
-# $Id: Makefile.win,v 1.11 2008/03/24 20:59:11 mascarenhas Exp $
+# $Id: Makefile.win,v 1.12 2008/04/29 20:59:04 carregal Exp $
 
 include config.win
 
@@ -23,11 +23,11 @@ src\$(DES56_LIBNAME) : $(DES56_OBJS)
 	IF EXIST src\des56.dll.manifest mt -manifest src\des56.dll.manifest -outputresource:src\des56.dll;2
 
 install: src\$(MD5_LIBNAME) src\$(DES56_LIBNAME)
-	IF NOT EXIST $(LUA_LIBDIR)\md5 mkdir $(LUA_LIBDIR)\md5
-	copy src\$(MD5_LIBNAME) $(LUA_LIBDIR)\md5\core.dll
-	IF NOT EXIST $(LUA_DIR) mkdir $(LUA_DIR)
-	copy $(MD5_LUAS) $(LUA_DIR)
-	copy src\$(DES56_LIBNAME) $(LUA_LIBDIR)\
+	IF NOT EXIST "$(LUA_LIBDIR)\md5" mkdir "$(LUA_LIBDIR)\md5"
+	copy "src\$(MD5_LIBNAME)" "$(LUA_LIBDIR)\md5\core.dll"
+	IF NOT EXIST "$(LUA_DIR)" mkdir "$(LUA_DIR)"
+	copy "$(MD5_LUAS)" "$(LUA_DIR)"
+	copy "src\$(DES56_LIBNAME)" "$(LUA_LIBDIR)\"
 
 clean:
 	FOR %i in ($(MD5_OBJS)) DO del %i
