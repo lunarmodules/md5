@@ -75,7 +75,8 @@ local code = md5.crypt(msg, key, "seed")
 assert(md5.decrypt(code, key) == msg)
 contchars(code)
 
-assert(md5.crypt('a', 'a') ~= md5.crypt('a', 'b'))
+local seed = 'some_seed'
+assert(md5.crypt('a','a',seed) ~= md5.crypt('a','b',seed))
 
 print"MD5 OK"
 
