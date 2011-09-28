@@ -8,8 +8,7 @@ ifeq "$(LUA_VERSION_NUM)" "500"
 COMPAT_O= $(COMPAT_DIR)/compat-5.1.o
 endif
 
-MD5_OBJS= src/md5.o src/md5lib.o $(COMPAT_O)
-MD5_LUAS= src/md5.lua
+MD5_OBJS= src/md5.o $(COMPAT_O)
 MD5_LIBNAME = core.so
 
 DES56_OBJS= src/des56.o src/ldes56.o
@@ -30,7 +29,6 @@ install: src/$(MD5_LIBNAME) src/$(DES56_LIBNAME)
 	mkdir -p $(LUA_LIBDIR)/md5
 	cp src/$(MD5_LIBNAME) $(LUA_LIBDIR)/md5/core.so
 	mkdir -p $(LUA_DIR)
-	cp $(MD5_LUAS) $(LUA_DIR)
 	cp src/$(DES56_LIBNAME) $(LUA_LIBDIR)
 
 clean:
