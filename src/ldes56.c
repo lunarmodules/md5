@@ -137,7 +137,7 @@ static void set_info (lua_State *L) {
 	lua_settable (L, -3);
 }
 
-static const struct luaL_reg des56lib[] = {
+static const struct luaL_Reg des56lib[] = {
   {"crypt", des56_crypt},
   {"decrypt", des56_decrypt},
   {NULL, NULL},
