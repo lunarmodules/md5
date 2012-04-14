@@ -55,7 +55,7 @@ local tolerance = 1.12
 local function contchars (s)
   local a = {}
   for i=0,255 do a[string.char(i)] = 0 end
-  for c in string.gfind(s, '.') do
+  for c in string.gmatch(s, '.') do
     a[c] = a[c] + 1
   end
   local av = string.len(s)/256
