@@ -18,19 +18,65 @@
 
 #include "md5.h"
 
+#define MD5_TYPE "md5_t"
 
 /**
 *  Hash function. Returns a hash for a given string.
 *  @param message: arbitrary binary string.
-*  @return  A 128-bit hash string.
+*  @param status: optional hash context
+*  @return  A 128-bit hash string, or a new hash context.
 */
 static int lmd5 (lua_State *L) {
+  size_t len;
+  const char *message = luaL_checklstring(L, 1, &len);
   char buff[16];
-  size_t l;
-  const char *message = luaL_checklstring(L, 1, &l);
-  md5(message, l, buff);
-  lua_pushlstring(L, buff, 16L);
+  if (lua_gettop(L) < 2) {
+    md5(message, len, buff);
+    lua_pushlstring(L, buff, 16L);
+  }
+  else {
+    md5_t *m;
+    lua_settop(L, 2);
+    if (lua_isuserdata(L, 2))
+      m = luaL_checkudata(L, 2, MD5_TYPE);
+    else {
+      m = lua_newuserdata(L, sizeof(md5_t));
+      luaL_getmetatable(L, MD5_TYPE);
+      lua_setmetatable(L, -2);
+      md5_init(m);
+    }
+    if (md5_update(m, message, len)) {
+      md5_finish(m, buff);
+      lua_pushlstring(L, buff, 16L);
+    }
+  }
   return 1;
+}
+
+
+static int tohex(lua_State *L) {
+  size_t i, l;
+  const char *str = luaL_checklstring(L, 1, &l);
+  luaL_Buffer b;
+  char hex[3] = {0};
+  luaL_buffinit(L, &b);
+  for (i = 0; i < l; ++i) {
+    sprintf(hex, "%02x", str[i] & 0xff);
+    luaL_addlstring(&b, hex, 2);
+  }
+  luaL_pushresult(&b);
+  return 1;
+}
+
+
+static int lmd5hexa(lua_State *L) {
+    lmd5(L);
+    if (!lua_isuserdata(L, -1)) {
+        lua_insert(L, 1);
+        lua_settop(L, 1);
+        return tohex(L);
+    }
+    return 1;
 }
 
 
@@ -188,6 +234,7 @@ static void set_info (lua_State *L) {
 
 static struct luaL_Reg md5lib[] = {
   {"sum", lmd5},
+  {"sumhexa", lmd5hexa},
   {"exor", ex_or},
   {"crypt", crypt},
   {"decrypt", decrypt},
@@ -195,8 +242,13 @@ static struct luaL_Reg md5lib[] = {
 };
 
 
-int luaopen_md5_core (lua_State *L) {
-  luaL_openlib(L, "md5", md5lib, 0);
+int luaopen_md5 (lua_State *L) {
+  luaL_newmetatable(L, MD5_TYPE);
+#if LUA_VERSION_NUM < 502
+  luaL_register(L, "md5", md5lib);
+#elif LUA_VERSION_NUM == 502
+  luaL_newlib(L, md5lib);
+#endif
   set_info (L);
   return 1;
 }

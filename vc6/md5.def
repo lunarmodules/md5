@@ -2,4 +2,4 @@ LIBRARY core.dll
 DESCRIPTION "LuaMD5"
 VERSION 1.0.1
 EXPORTS
-luaopen_md5_core
+luaopen_md5

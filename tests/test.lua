@@ -2,7 +2,7 @@
 
 -- Testing MD5
 
-require"md5"
+local md5 = require"md5"
 
 
 assert(md5.exor('', '') == '')
@@ -82,7 +82,7 @@ print"MD5 OK"
 
 
 -- Testing DES 56
-require 'des56'
+local des56 = require 'des56'
 
 local key = '&3g4&gs*&3'
 
