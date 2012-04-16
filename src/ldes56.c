@@ -137,14 +137,18 @@ static void set_info (lua_State *L) {
 	lua_settable (L, -3);
 }
 
-static const struct luaL_reg des56lib[] = {
+static const struct luaL_Reg des56lib[] = {
   {"crypt", des56_crypt},
   {"decrypt", des56_decrypt},
   {NULL, NULL},
 };
 
 int luaopen_des56 (lua_State *L) {
-  luaL_openlib (L, "des56", des56lib, 0);
+#if LUA_VERSION_NUM < 502
+  luaL_register(L, "des56", des56lib);
+#elif LUA_VERSION_NUM == 502
+  luaL_newlib(L, des56lib);
+#endif
   set_info (L);
   return 1;
 }

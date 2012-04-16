@@ -2,7 +2,7 @@
 
 -- Testing MD5
 
-require"md5"
+local md5 = require"md5"
 
 
 assert(md5.exor('', '') == '')
@@ -55,7 +55,7 @@ local tolerance = 1.12
 local function contchars (s)
   local a = {}
   for i=0,255 do a[string.char(i)] = 0 end
-  for c in string.gfind(s, '.') do
+  for c in string.gmatch(s, '.') do
     a[c] = a[c] + 1
   end
   local av = string.len(s)/256
@@ -82,7 +82,7 @@ print"MD5 OK"
 
 
 -- Testing DES 56
-require 'des56'
+local des56 = require 'des56'
 
 local key = '&3g4&gs*&3'
 
