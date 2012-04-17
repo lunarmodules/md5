@@ -251,7 +251,7 @@ int md5_update(md5_t *m, const char *message, size_t len) {
     WORD32 d_old[4];
     WORD32 wbuff[16];
     int numbytes = (len-i >= 64) ? 64 : len-i;
-    if (numbytes == 0 && len != 0)
+    if (status != 1 && numbytes == 0 && len != 0)
       break;
     /*salva os valores do vetor digest*/
     d_old[0]=d[0]; d_old[1]=d[1]; d_old[2]=d[2]; d_old[3]=d[3];
