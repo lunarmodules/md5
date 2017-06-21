@@ -159,11 +159,22 @@ static void bytestoword32 (WORD32 *x, const char *pt) {
 
 }
 
+static WORD32 leword32 (WORD32 x) {
+  union {
+    unsigned char b[4];
+    WORD32 x;
+  } u;
+  u.b[0] = (unsigned char)(x & 0xff);
+  u.b[1] = (unsigned char)(x >> 8 & 0xff);
+  u.b[2] = (unsigned char)(x >> 16 & 0xff);
+  u.b[3] = (unsigned char)(x >> 24 & 0xff);
+  return u.x;
+}
 
 static void put_length(WORD32 *x, long len) {
   /* in bits! */
-  x[14] = (WORD32)((len<<3) & MASK);
-  x[15] = (WORD32)(len>>(32-3) & 0x7);
+  x[14] = leword32((WORD32)((len<<3) & MASK));
+  x[15] = leword32((WORD32)(len>>(32-3) & 0x7));
 }
 
 
