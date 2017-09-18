@@ -116,7 +116,7 @@ In both Unix and Windows systems the file <code>md5.lua</code> should be copied 
 
 <p>All MD5-based functions are registered inside <code>md5</code> module.</p>
 
-<dl>
+<dl class="reference">
     <dt><strong>md5.sum (message)</strong></dt>
     <dd>Computes the MD5 message-digest of the string <code>message</code>.
         This function takes as input a message of arbitrary length and content
@@ -174,7 +174,7 @@ In both Unix and Windows systems the file <code>md5.lua</code> should be copied 
 
 <p>The DES-based functions are registered inside <code>des56</code> module.</p>
 
-<dl>
+<dl class="reference">
     <dt><strong>des56.crypt (message, key)</strong></dt>
     <dd>Encrypts a string, using DES with a 56-bit key.
         <code>message</code> is an arbitrary binary string to be encrypted.
@@ -195,7 +195,7 @@ In both Unix and Windows systems the file <code>md5.lua</code> should be copied 
 
 <p>The following functions are declared in <code>md5.h</code></p>
 
-<dl>
+<dl class="reference">
     <dt><strong>int luaopen_md5_core (lua_State *L)</strong></dt>
     <dd>Opens the library and registers the "md5" Lua functions in the given state.</dd>
     
@@ -209,7 +209,7 @@ In both Unix and Windows systems the file <code>md5.lua</code> should be copied 
 
 <p>The following function is declared in <code>ldes56.h</code></p>
     
-<dl>
+<dl class="reference">
     <dt><strong>int luaopen_des56 (lua_State *L)</strong></dt>
     <dd>Opens the library and registers the "des56" Lua functions in the given state.</dd>
 </dl>
