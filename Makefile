@@ -23,9 +23,8 @@ src/$(DES56_LIBNAME) : $(DES56_OBJS) $(COMPAT52_OBJS)
 
 install: src/$(MD5_LIBNAME) src/$(DES56_LIBNAME)
 	mkdir -p $(LUA_LIBDIR)/md5
-	cp src/$(MD5_LIBNAME) $(LUA_LIBDIR)/md5/core.so
+	cp src/$(MD5_LIBNAME) $(LUA_LIBDIR)/md5.so
 	mkdir -p $(LUA_DIR)
-	cp $(MD5_LUAS) $(LUA_DIR)
 	cp src/$(DES56_LIBNAME) $(LUA_LIBDIR)
 
 clean:

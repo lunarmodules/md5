@@ -5,19 +5,24 @@
 */
 
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <time.h>
+
+#include <lua.h>
+#include <lauxlib.h>
+
+#if ! defined (LUA_VERSION_NUM) || LUA_VERSION_NUM < 501
+#include "compat-5.1.h"
+#endif
+
 
 #include "md5.h"
 
 
 #define WORD 32
 #define MASK 0xFFFFFFFF
-#if __STDC_VERSION__ >= 199901L
-#include <stdint.h>
-typedef uint32_t WORD32;
-#else
-typedef unsigned int WORD32;
-#endif
 
 
 /**
@@ -27,9 +32,31 @@ typedef unsigned int WORD32;
 *  @param output: buffer to receive the hash value. Its size must be
 *  (at least) HASHSIZE.
 */
-void md5 (const char *message, long len, char *output);
+void md5 (const char *message, size_t len, char output[HASHSIZE]);
 
+/**
+*  init a new md5 calculate context
+*  @param m a uninitialized md5_t type context
+*/
+void md5_init (md5_t *m);
 
+/**
+*  update message to md5 context
+*  @param m a initialized md5_t type context
+*  @param message aribtary string
+*  @param len message length
+*  @return true if update completed, means len is not the multiples of 64.
+*          false if you can continue update.
+*/
+int  md5_update (md5_t *m, const char *message, size_t len);
+
+/**
+ *  finish md5 calculate.
+ *  @param m a md5_type context which previous md5_update on it return true.
+ *  @param output buffer to receive the hash value. its size must be
+ *  (at least) HASHSIZE.
+ */
+void md5_finish (md5_t *m, char output[HASHSIZE]);
 
 /*
 ** Realiza a rotacao no sentido horario dos bits da variavel 'D' do tipo WORD32.
@@ -191,8 +218,7 @@ static int converte (WORD32 *x, const char *pt, int num, int old_status) {
 }
 
 
-
-void md5 (const char *message, long len, char *output) {
+void md5 (const char *message, size_t len, char output[HASHSIZE]) {
   WORD32 d[4];
   int status = 0;
   long i = 0;
@@ -212,3 +238,33 @@ void md5 (const char *message, long len, char *output) {
   word32tobytes(d, output);
 }
 
+void md5_init(md5_t *m) {
+    inic_digest(m->d);
+    m->len = 0;
+}
+
+int md5_update(md5_t *m, const char *message, size_t len) {
+  WORD32 *d = m->d;
+  size_t addlen = m->len;
+  int status = 0, i = 0;
+  while (status != 2) {
+    WORD32 d_old[4];
+    WORD32 wbuff[16];
+    int numbytes = (len-i >= 64) ? 64 : len-i;
+    if (status != 1 && numbytes == 0 && len != 0)
+      break;
+    /*salva os valores do vetor digest*/
+    d_old[0]=d[0]; d_old[1]=d[1]; d_old[2]=d[2]; d_old[3]=d[3];
+    status = converte(wbuff, message+i, numbytes, status);
+    if (status == 2) put_length(wbuff, addlen+len);
+    digest(wbuff, d);
+    d[0]+=d_old[0]; d[1]+=d_old[1]; d[2]+=d_old[2]; d[3]+=d_old[3];
+    i += numbytes;
+  }
+  m->len += len;
+  return status == 2;
+}
+
+void md5_finish (md5_t *m, char output[HASHSIZE]) {
+    word32tobytes(m->d, output);
+}
