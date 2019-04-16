@@ -7,6 +7,7 @@ if string.find(_VERSION, "Lua 5.0") then
 	string.gmatch = string.gfind
 end
 local md5 = require"md5"
+io.write (md5._VERSION..' '.._VERSION..'\n')
 
 
 assert(md5.exor('', '') == '')
@@ -50,7 +51,7 @@ assert(md5.sumhexa(
 "12345678901234567890123456789012345678901234567890123456789012345678901234567890")
    == "57edf4a22be3c955ac49da2e2107b67a")
 
-print '+'
+io.write '+'
 
 
 
@@ -82,7 +83,7 @@ contchars(code)
 local seed = 'some_seed'
 assert(md5.crypt('a','a',seed) ~= md5.crypt('a','b',seed))
 
-print"MD5 OK"
+io.write'+'
 
 
 -- Testing DES 56
@@ -117,4 +118,4 @@ assert(des56.decrypt(des56.crypt(ascii, key), key) == ascii)
 key = string.sub(ascii, 2)
 assert(des56.decrypt(des56.crypt(ascii, key), key) == ascii)
 
-print"DES56 OK"
+io.write'+\n'

@@ -34,7 +34,7 @@ int  md5_update (md5_t *m, const char *message, size_t len);
 void md5_finish (md5_t *m, char output[HASHSIZE]);
 void md5 (const char *message, size_t len, char output[HASHSIZE]);
 
-LUALIB_API int luaopen_md5 (lua_State *L);
+LUALIB_API int luaopen_md5_core (lua_State *L);
 
 
 #endif

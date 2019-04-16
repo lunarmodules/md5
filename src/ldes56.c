@@ -128,13 +128,13 @@ static int des56_crypt( lua_State *L )
 */
 static void set_info (lua_State *L) {
 	lua_pushliteral (L, "_COPYRIGHT");
-	lua_pushliteral (L, "Copyright (C) 2007-2013 PUC-Rio");
+	lua_pushliteral (L, "Copyright (C) 2007-2019 PUC-Rio");
 	lua_settable (L, -3);
 	lua_pushliteral (L, "_DESCRIPTION");
 	lua_pushliteral (L, "DES 56 cryptographic facilities for Lua");
 	lua_settable (L, -3);
 	lua_pushliteral (L, "_VERSION");
-	lua_pushliteral (L, "DES56 1.2");
+	lua_pushliteral (L, "DES56 1.3");
 	lua_settable (L, -3);
 }
 

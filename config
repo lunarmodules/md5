@@ -3,11 +3,14 @@
 # Default prefix
 PREFIX = /usr/local
 
+# Lua version
+LUA_SYS_VER ?= 5.2
+
 # System's libraries directory (where binary libraries are installed)
-LUA_LIBDIR= $(PREFIX)/lib/lua/5.1
+LUA_LIBDIR= $(PREFIX)/lib/lua/$(LUA_SYS_VER)
 
 # System's lua directory (where Lua libraries are installed)
-LUA_DIR= $(PREFIX)/share/lua/5.1
+LUA_DIR= $(PREFIX)/share/lua/$(LUA_SYS_VER)
 
 # Lua includes directory
 LUA_INC= $(PREFIX)/include
