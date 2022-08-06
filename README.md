@@ -1,6 +1,6 @@
 # MD5 - Cryptographic Library for Lua
 
-http://keplerproject.github.io/md5/
+https://lunarmodules.github.io/md5/
 
 MD5 offers basic cryptographic facilities for Lua 5.1: a hash (digest)
 function, a pair crypt/decrypt based on MD5 and CFB, and a pair crypt/decrypt based
@@ -12,7 +12,7 @@ Please check the documentation at /doc/us/ for more information.
 
 ## Installation
 
-To install using [LuaRocks](https://github.com/keplerproject/luarocks) run:
+To install using [LuaRocks](https://luarocks.org) run:
 
 ```
 luarocks install md5
