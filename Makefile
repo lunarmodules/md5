@@ -22,6 +22,7 @@ src/$(DES56_LIBNAME) : $(DES56_OBJS) $(COMPAT52_OBJS)
 	$(CC) $(CFLAGS) $(LIB_OPTION) -o src/$(DES56_LIBNAME) $(DES56_OBJS) $(COMPAT52_OBJS)
 
 install: src/$(MD5_LIBNAME) src/$(DES56_LIBNAME)
+	mkdir -p $(LUA_LIBDIR)
 	cp src/$(DES56_LIBNAME) $(LUA_LIBDIR)
 	mkdir -p $(LUA_LIBDIR)/md5
 	cp src/$(MD5_LIBNAME) $(LUA_LIBDIR)/md5/
