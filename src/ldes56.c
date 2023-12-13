@@ -20,10 +20,6 @@ static int des56_decrypt( lua_State *L )
   size_t keylen;
   const char *key = 
     luaL_checklstring( L, 2, &keylen );
-  int padinfo;
-
-  padinfo = cypheredText[cypherlen-1];
-  cypherlen--;
 
   /* Aloca array */
   decypheredText = 
@@ -61,9 +57,8 @@ static int des56_decrypt( lua_State *L )
       fencrypt(&(decypheredText[abs_index - 8]), 1, &KS);
     }
   }
-  decypheredText[abs_index] = 0;
 
-  lua_pushlstring(L, decypheredText, (abs_index-padinfo));
+  lua_pushlstring(L, decypheredText, abs_index);
   free( decypheredText );
   return 1;
 }
@@ -119,9 +114,8 @@ static int des56_crypt( lua_State *L )
     }
     fencrypt(&(cypheredText[abs_index - 8]), 0, &KS);
   }
-  cypheredText[abs_index] = pad;
 
-  lua_pushlstring( L, cypheredText, abs_index+1 );
+  lua_pushlstring( L, cypheredText, abs_index );
   free( cypheredText );
   return 1;
 }
