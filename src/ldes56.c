@@ -43,7 +43,7 @@ static int des56_decrypt( lua_State *L )
     fencrypt(&(plainText[i]), 1, &KS);
   }
 
-  lua_pushlstring(L, plainText, cypherlen - plainText[cypherlen-1];);
+  lua_pushlstring(L, plainText, cypherlen - plainText[cypherlen-1]);
 
   free( plainText );
   return 1;
