@@ -17,7 +17,9 @@ static int des56_decrypt( lua_State *L )
   size_t cypherlen;
   const char *cypheredText = 
     luaL_checklstring( L, 1, &cypherlen );
-  const char *key = luaL_optstring( L, 2, NULL );
+  size_t keylen;
+  const char *key = 
+    luaL_checklstring( L, 2, &keylen );
   int padinfo;
 
   padinfo = cypheredText[cypherlen-1];
@@ -32,7 +34,7 @@ static int des56_decrypt( lua_State *L )
   }
 
   /* Inicia decifragem */
-  if (key && strlen(key) >= 8)
+  if (key && keylen >= 8)
   {
     char k[8];
     int i;
@@ -73,7 +75,8 @@ static int des56_crypt( lua_State *L )
   int rel_index, pad, abs_index;
   size_t plainlen;
   const char *plainText = luaL_checklstring( L, 1, &plainlen );
-  const char *key = luaL_optstring( L, 2, NULL );
+  size_t keylen;
+  const char *key = luaL_checklstring( L, 2, &keylen );
 
   cypheredText = (char *) malloc( (plainlen+8) * sizeof(char));
   if(cypheredText == NULL) {
@@ -81,7 +84,7 @@ static int des56_crypt( lua_State *L )
     lua_error(L);
   }
 
-  if (key && strlen(key) >= 8)
+  if (key && keylen >= 8)
   {
     char k[8];
     int i;
