@@ -9,117 +9,96 @@
 #include "compat-5.2.h"
 #include "ldes56.h"
 
+static char *des56_alloc(lua_State *L, size_t len)
+{
+  char *p = (char *) malloc( len * sizeof(char));
+  if(p == NULL) {
+    lua_pushstring(L, "des56_alloc: memory allocation failed");
+    lua_error(L);
+   }
+  return p;
+}
+
+static int des56_set_key(lua_State *L, const char *key, size_t len, keysched *KS)
+{
+  char k[8];
+  if (key && len >= 8)
+  {
+    memcpy(k, key, 8);
+    fsetkey(k, KS);
+  } else {
+    lua_pushstring(L, "des56_set_key: invalid key");
+    lua_error(L);
+    return 0;
+  }
+  return 1;
+}
+
 static int des56_decrypt( lua_State *L )
 {
-  char* decypheredText;
   keysched KS;
-  int rel_index, abs_index;
-  size_t cypherlen;
-  const char *cypheredText = 
-    luaL_checklstring( L, 1, &cypherlen );
-  const char *key = luaL_optstring( L, 2, NULL );
-  int padinfo;
+  int i;
+  size_t cipherLen;
+  const char *cipherText =
+    luaL_checklstring( L, 1, &cipherLen );
+  size_t keyLen;
+  const char *key =
+    luaL_checklstring( L, 2, &keyLen );
 
-  padinfo = cypheredText[cypherlen-1];
-  cypherlen--;
+  char* plainText = des56_alloc(L, cipherLen);
+  if(plainText == NULL)
+    return 0;
+  if (des56_set_key(L, key, keyLen, &KS) == 0)
+    return 0;
 
-  /* Aloca array */
-  decypheredText = 
-    (char *) malloc( (cypherlen+1) * sizeof(char));
-  if(decypheredText == NULL) {
-    lua_pushstring(L, "Error decrypting file. Not enough memory.");
-    lua_error(L);
-  }
+  // copy the cipherText into the decryption buffer
+  memcpy(plainText, cipherText, cipherLen);
 
-  /* Inicia decifragem */
-  if (key && strlen(key) >= 8)
+  // loop over the 8-byte blocks and encrypt them
+  for (i=0; i<(int)cipherLen; i+=8)
   {
-    char k[8];
-    int i;
-
-    for (i=0; i<8; i++)
-      k[i] = (unsigned char)key[i];
-    fsetkey(k, &KS);
-  } else {
-    lua_pushstring(L, "Error decrypting file. Invalid key.");
-    lua_error(L);
+    fencrypt(&(plainText[i]), 1, &KS);
   }
 
-  rel_index = 0;
-  abs_index = 0;
+  // PKCS#5 padding: last byte in the plainText is the pad length, remove those bytes
+  lua_pushlstring(L, plainText, cipherLen - plainText[cipherLen-1]);
+  free( plainText );
 
-  while (abs_index < (int) cypherlen)
-  {
-    decypheredText[abs_index] = cypheredText[abs_index];
-    abs_index++;
-    rel_index++;
-    if( rel_index == 8 )
-    {
-      rel_index = 0;
-      fencrypt(&(decypheredText[abs_index - 8]), 1, &KS);
-    }
-  }
-  decypheredText[abs_index] = 0;
-
-  lua_pushlstring(L, decypheredText, (abs_index-padinfo));
-  free( decypheredText );
   return 1;
 }
 
 static int des56_crypt( lua_State *L )
 {
-  char *cypheredText;
   keysched KS;
-  int rel_index, pad, abs_index;
-  size_t plainlen;
-  const char *plainText = luaL_checklstring( L, 1, &plainlen );
-  const char *key = luaL_optstring( L, 2, NULL );
+  int i;
+  size_t plainLen;
+  const char *plainText = luaL_checklstring( L, 1, &plainLen );
+  size_t keyLen;
+  const char *key = luaL_checklstring( L, 2, &keyLen );
+  int padLen = (8 - plainLen % 8);
 
-  cypheredText = (char *) malloc( (plainlen+8) * sizeof(char));
-  if(cypheredText == NULL) {
-    lua_pushstring(L, "Error encrypting file. Not enough memory."); 
-    lua_error(L);
-  }
+  char* cipherText = des56_alloc(L, plainLen + padLen);
+  if(cipherText == NULL)
+    return 0;
+  if (des56_set_key(L, key, keyLen, &KS) == 0)
+    return 0;
 
-  if (key && strlen(key) >= 8)
+  // copy the plainText into the encryption buffer
+  memcpy(cipherText, plainText, plainLen);
+
+  // PKCS#5 padding: add padLen bytes with padLen value (last byte matters)
+  memset(&(cipherText[plainLen]), padLen, padLen);
+
+  // loop over the 8-byte blocks and decrypt them
+  for (i=0; i<(int)plainLen+1; i+=8)
   {
-    char k[8];
-    int i;
-
-    for (i=0; i<8; i++)
-      k[i] = (unsigned char)key[i];
-    fsetkey(k, &KS);
-  } else {
-    lua_pushstring(L, "Error encrypting file. Invalid key.");
-    lua_error(L);
+    fencrypt(&(cipherText[i]), 0, &KS);
   }
 
-  rel_index = 0;
-  abs_index = 0;
-  while (abs_index < (int) plainlen) {
-    cypheredText[abs_index] = plainText[abs_index];
-    abs_index++;
-    rel_index++;
-    if( rel_index == 8 ) {
-      rel_index = 0;
-      fencrypt(&(cypheredText[abs_index - 8]), 0, &KS);
-    }
-  }
+  // return the encrypted padded string
+  lua_pushlstring( L, cipherText, plainLen + padLen);
+  free( cipherText );
 
-  pad = 0;
-  if(rel_index != 0) { /* Pads remaining bytes with zeroes */
-    while(rel_index < 8)
-    {
-      pad++;
-      cypheredText[abs_index++] = 0;
-      rel_index++;
-    }
-    fencrypt(&(cypheredText[abs_index - 8]), 0, &KS);
-  }
-  cypheredText[abs_index] = pad;
-
-  lua_pushlstring( L, cypheredText, abs_index+1 );
-  free( cypheredText );
   return 1;
 }
 
