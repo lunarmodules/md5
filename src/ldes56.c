@@ -11,112 +11,80 @@
 
 static int des56_decrypt( lua_State *L )
 {
-  char* decypheredText;
   keysched KS;
-  int rel_index, abs_index;
+  int i;
   size_t cypherlen;
-  const char *cypheredText = 
+  const char *cypherText =
     luaL_checklstring( L, 1, &cypherlen );
   size_t keylen;
-  const char *key = 
+  const char *key =
     luaL_checklstring( L, 2, &keylen );
 
-  /* Aloca array */
-  decypheredText = 
-    (char *) malloc( (cypherlen+1) * sizeof(char));
-  if(decypheredText == NULL) {
-    lua_pushstring(L, "Error decrypting file. Not enough memory.");
+  char* plainText =
+    (char *) malloc( (cypherlen + 1) * sizeof(char));
+  if(plainText == NULL) {
+    lua_pushstring(L, "Error decrypting: memory allocation failed.");
     lua_error(L);
   }
 
-  /* Inicia decifragem */
   if (key && keylen >= 8)
   {
     char k[8];
-    int i;
-
-    for (i=0; i<8; i++)
-      k[i] = (unsigned char)key[i];
+    memcpy(k, key, 8);
     fsetkey(k, &KS);
   } else {
-    lua_pushstring(L, "Error decrypting file. Invalid key.");
+    lua_pushstring(L, "Error decrypting: invalid key.");
     lua_error(L);
   }
 
-  rel_index = 0;
-  abs_index = 0;
-
-  while (abs_index < (int) cypherlen)
+  memcpy(plainText, cypherText, cypherlen);
+  for (i=0; i<(int)cypherlen; i+=8)
   {
-    decypheredText[abs_index] = cypheredText[abs_index];
-    abs_index++;
-    rel_index++;
-    if( rel_index == 8 )
-    {
-      rel_index = 0;
-      fencrypt(&(decypheredText[abs_index - 8]), 1, &KS);
-    }
+    fencrypt(&(plainText[i]), 1, &KS);
   }
 
-  lua_pushlstring(L, decypheredText, abs_index);
-  free( decypheredText );
+  lua_pushlstring(L, plainText, cypherlen - plainText[cypherlen-1];);
+
+  free( plainText );
   return 1;
 }
 
 static int des56_crypt( lua_State *L )
 {
-  char *cypheredText;
+  char *cipherText;
   keysched KS;
-  int rel_index, pad, abs_index;
+  int i;
   size_t plainlen;
   const char *plainText = luaL_checklstring( L, 1, &plainlen );
   size_t keylen;
   const char *key = luaL_checklstring( L, 2, &keylen );
+  int pad = (8 - plainlen % 8);
 
-  cypheredText = (char *) malloc( (plainlen+8) * sizeof(char));
-  if(cypheredText == NULL) {
-    lua_pushstring(L, "Error encrypting file. Not enough memory."); 
+  cipherText = (char *) malloc( (plainlen+pad) * sizeof(char));
+  if(cipherText == NULL) {
+    lua_pushstring(L, "Error encrypting: memory allocation failed.");
     lua_error(L);
   }
 
   if (key && keylen >= 8)
   {
     char k[8];
-    int i;
-
-    for (i=0; i<8; i++)
-      k[i] = (unsigned char)key[i];
+	memcpy(k, key, 8);
     fsetkey(k, &KS);
   } else {
-    lua_pushstring(L, "Error encrypting file. Invalid key.");
+    lua_pushstring(L, "Error encrypting: invalid key.");
     lua_error(L);
   }
 
-  rel_index = 0;
-  abs_index = 0;
-  while (abs_index < (int) plainlen) {
-    cypheredText[abs_index] = plainText[abs_index];
-    abs_index++;
-    rel_index++;
-    if( rel_index == 8 ) {
-      rel_index = 0;
-      fencrypt(&(cypheredText[abs_index - 8]), 0, &KS);
-    }
+  memcpy(cipherText, plainText, plainlen);
+  memset(&(cipherText[plainlen]), pad, pad);
+  for (i=0; i<(int)plainlen+1; i+=8)
+  {
+    fencrypt(&(cipherText[i]), 0, &KS);
   }
 
-  pad = 0;
-  if(rel_index != 0) { /* Pads remaining bytes with zeroes */
-    while(rel_index < 8)
-    {
-      pad++;
-      cypheredText[abs_index++] = 0;
-      rel_index++;
-    }
-    fencrypt(&(cypheredText[abs_index - 8]), 0, &KS);
-  }
-
-  lua_pushlstring( L, cypheredText, abs_index );
-  free( cypheredText );
+  lua_pushlstring( L, cipherText, plainlen+pad);
+  free( cipherText );
   return 1;
 }
 
